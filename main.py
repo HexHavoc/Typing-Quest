@@ -2,12 +2,9 @@ import curses
 
 class TypingQuest:
 
-    def __init__(self):
-        pass
-
     def welcome_message(self,stdscr):
         stdscr.clear()
-        stdscr.addstr("Welcome to the Ultimate Typing Test! 🎉.\n")
+        stdscr.addstr("Welcome to the Ultimate Typing Test! 🎉.\n",curses.color_pair(1))
         stdscr.addstr("\nSharpen your skills, improve your speed, and challenge yourself to type like a pro\n")
         stdscr.addstr("\n💻 How it works:\n")
         stdscr.addstr("\n1. You'll be presented with a passage to type.\n")
@@ -30,7 +27,11 @@ class TypingQuest:
 
     
     def main_func(self,stdscr):
+        curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)
         self.welcome_message(stdscr)
+        
 
 
 typer = TypingQuest()
