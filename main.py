@@ -15,21 +15,30 @@ class TypingQuest:
         stdscr.getkey()
         self.typing_tester(stdscr)
 
+
+    
+    def paragraph_loader(self):
+         with open("story.txt","r") as f:
+              paragraph = f.read()
+         
+         return paragraph
+
     
     def typing_tester(self,stdscr):
+        self.paragraph = self.paragraph_loader()
         stdscr.clear()
-        test_string = "MaryLou wore the tiara with pride.There was something that made doing anything she didn't really want to do a bit easier when she wore it.She really didn't care what those staring through the window were thinking as she vacuumed her apartment"
         entered_text = []
-        row_count = 0
-        stdscr.addstr(test_string)
-
+        max_rows, max_columns = stdscr.getmaxyx()
+        start_row = 1
         while True:  
             stdscr.clear()
-            stdscr.addstr(test_string)
+            stdscr.addstr(1,0,self.paragraph)
 
-
-            for character_position,entered_character in enumerate(entered_text):                
-                stdscr.addstr(row_count,character_position,entered_character,curses.color_pair(1))
+            for character_position, entered_character in enumerate(entered_text):
+                current_row = start_row + (character_position // max_columns)
+                current_column = character_position % max_columns 
+                if current_row < max_rows:
+                    stdscr.addstr(current_row, current_column, entered_character, curses.color_pair(1))
 
 
             stdscr.refresh()
@@ -43,12 +52,10 @@ class TypingQuest:
             elif(ord(entered_key) == 27):
                 break
 
-            elif(entered_key == '\n'):
-                row_count += 1 
-                
 
             else:
-                entered_text.append(entered_key)
+                if (len(entered_text) < (max_rows - start_row) * max_columns and len(entered_text) < len(self.paragraph)):
+                    entered_text.append(entered_key)
 
                 
 
