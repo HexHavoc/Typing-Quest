@@ -20,15 +20,16 @@ class TypingQuest:
         stdscr.clear()
         test_string = "MaryLou wore the tiara with pride.There was something that made doing anything she didn't really want to do a bit easier when she wore it.She really didn't care what those staring through the window were thinking as she vacuumed her apartment"
         entered_text = []
+        row_count = 0
         stdscr.addstr(test_string)
 
         while True:  
             stdscr.clear()
             stdscr.addstr(test_string)
 
-            
-            for character_position,entered_character in enumerate(entered_text):
-                stdscr.addstr(0,character_position,entered_character,curses.color_pair(1))
+
+            for character_position,entered_character in enumerate(entered_text):                
+                stdscr.addstr(row_count,character_position,entered_character,curses.color_pair(1))
 
 
             stdscr.refresh()
@@ -41,6 +42,10 @@ class TypingQuest:
             
             elif(ord(entered_key) == 27):
                 break
+
+            elif(entered_key == '\n'):
+                row_count += 1 
+                
 
             else:
                 entered_text.append(entered_key)
