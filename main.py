@@ -18,7 +18,7 @@ class TypingQuest:
     
     def typing_tester(self,stdscr):
         stdscr.clear()
-        test_string = "Hello this is the demo string for the typing test program."
+        test_string = "MaryLou wore the tiara with pride.There was something that made doing anything she didn't really want to do a bit easier when she wore it.She really didn't care what those staring through the window were thinking as she vacuumed her apartment"
         entered_text = []
         stdscr.addstr(test_string)
 
@@ -26,9 +26,9 @@ class TypingQuest:
             stdscr.clear()
             stdscr.addstr(test_string)
 
-
-            for entered_character in entered_text:
-                stdscr.addstr(entered_character,curses.color_pair(1))
+            
+            for character_position,entered_character in enumerate(entered_text):
+                stdscr.addstr(0,character_position,entered_character,curses.color_pair(1))
 
 
             stdscr.refresh()
