@@ -23,23 +23,29 @@ class TypingQuest:
         stdscr.addstr(test_string)
 
         while True:  
-            key = stdscr.getkey()
-            entered_text.append(key)
             stdscr.clear()
             stdscr.addstr(test_string)
 
-            if(key in ["KEY_BACKSPACE",'\b',"\x7f"]):
-                if(len(entered_text) > 0):
-                    entered_text.pop()
-            
-            if(ord(key) == 27):
-                break
 
+            for entered_character in entered_text:
+                stdscr.addstr(entered_character,curses.color_pair(1))
 
-            else:
-                stdscr.addstr(''.join(entered_text),curses.color_pair(1))
 
             stdscr.refresh()
+
+            entered_key = stdscr.getkey()
+
+            if(entered_key in ["KEY_BACKSPACE",'\b',"\x7f"]):
+                    if(len(entered_text) > 0):
+                            entered_text.pop()
+            
+            elif(ord(entered_key) == 27):
+                break
+
+            else:
+                entered_text.append(entered_key)
+
+                
 
     
     def main_func(self,stdscr):
