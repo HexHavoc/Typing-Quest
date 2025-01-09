@@ -35,10 +35,16 @@ class TypingQuest:
             stdscr.addstr(1,0,self.paragraph)
 
             for character_position, entered_character in enumerate(entered_text):
+
+                correct_character = self.paragraph[character_position]
+                display_color = curses.color_pair(1)
+                if(correct_character != entered_character):
+                     display_color = curses.color_pair(2)
+
                 current_row = start_row + (character_position // max_columns)
                 current_column = character_position % max_columns 
                 if current_row < max_rows:
-                    stdscr.addstr(current_row, current_column, entered_character, curses.color_pair(1))
+                    stdscr.addstr(current_row, current_column, entered_character, display_color)
 
 
             stdscr.refresh()
