@@ -1,4 +1,5 @@
 import curses
+import time
 
 class TypingQuest:
 
@@ -22,24 +23,37 @@ class TypingQuest:
               paragraph = f.read()
          
          return paragraph
+    
+
+    def wpm_calculator(self,start_timer,stdscr):
+         time_passed = max(time.time() - start_timer,1)
+         wpm = round((len(self.entered_text) / (time_passed / 60)) / 5)
+         stdscr.addstr(3,10,f"\nWPM {str(wpm)}",curses.color_pair(3))
 
     
     def typing_tester(self,stdscr):
         self.paragraph = self.paragraph_loader()
         stdscr.clear()
-        entered_text = []
+        self.entered_text = []
         max_rows, max_columns = stdscr.getmaxyx()
+        start_timer = time.time()
+        stdscr.nodelay(True)
         start_row = 1
-        while True:  
+        while True: 
             stdscr.clear()
             stdscr.addstr(1,0,self.paragraph)
+            self.wpm_calculator(start_timer,stdscr)
 
-            for character_position, entered_character in enumerate(entered_text):
+            if(len(self.entered_text) == len(self.paragraph)):
+                 stdscr.nodelay(False)
+                 break
+
+            for character_position, entered_character in enumerate(self.entered_text):
 
                 correct_character = self.paragraph[character_position]
                 display_color = curses.color_pair(1)
                 if(correct_character != entered_character):
-                     display_color = curses.color_pair(2)
+                    display_color = curses.color_pair(2)
 
                 current_row = start_row + (character_position // max_columns)
                 current_column = character_position % max_columns 
@@ -49,19 +63,24 @@ class TypingQuest:
 
             stdscr.refresh()
 
-            entered_key = stdscr.getkey()
+            try:
+                entered_key = stdscr.getkey()
+
+            except:
+                continue
 
             if(entered_key in ["KEY_BACKSPACE",'\b',"\x7f"]):
-                    if(len(entered_text) > 0):
-                            entered_text.pop()
+                    if(len(self.entered_text) > 0):
+                            self.entered_text.pop()
             
             elif(ord(entered_key) == 27):
                 break
 
 
             else:
-                if (len(entered_text) < (max_rows - start_row) * max_columns and len(entered_text) < len(self.paragraph)):
-                    entered_text.append(entered_key)
+                if (len(self.entered_text) < (max_rows - start_row) * max_columns):
+                    self.entered_text.append(entered_key)
+
 
                 
 
@@ -69,7 +88,7 @@ class TypingQuest:
     def main_func(self,stdscr):
         curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
         curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
-        curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
         self.welcome_message(stdscr)
         
 
