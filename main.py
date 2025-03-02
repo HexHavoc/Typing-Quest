@@ -1,4 +1,5 @@
 import curses
+import csv
 from curses.textpad import Textbox, rectangle
 import time
 
@@ -27,18 +28,18 @@ class TypingQuest:
 
         h, w = stdscr.getmaxyx()
         input_y, input_x = 12, 15
-        box_height, box_width = 3, 50
+        box_height, box_width = 1, 50
         
         rectangle(stdscr, input_y-1, input_x-1, input_y+1, input_x+box_width)
         
 
-        stdscr.addstr(input_y-2, input_x, "Enter your username:")
+        stdscr.addstr(input_y-2, input_x, "Enter your username:",curses.color_pair(4))
         stdscr.refresh()
         
-        win = curses.newwin(1, box_width-2, input_y, input_x)
+        win = curses.newwin(box_height, box_width-2, input_y, input_x)
         box = Textbox(win)
      
-        stdscr.addstr(input_y+3, input_x, "Press Enter to confirm")
+        stdscr.addstr(input_y+3, input_x, "Press Enter to confirm",curses.color_pair(1))
         stdscr.refresh()
         
         curses.curs_set(1)
@@ -46,13 +47,13 @@ class TypingQuest:
         box.edit()
         
         curses.curs_set(0)
-        
-        # Get resulting username and strip whitespace
+
         username = box.gather().strip()
+
         return username
 
     def paragraph_loader(self):
-        with open("story.txt", "r") as f:
+        with open("prompt.txt", "r") as f:
             paragraph = f.read()
         return paragraph
 
@@ -89,7 +90,8 @@ class TypingQuest:
     def typing_tester(self, stdscr):
         self.paragraph = self.paragraph_loader()
         self.entered_text = []
-        total_mistakes = 0
+        self.result_rows = []
+        self.total_mistakes = 0
         current_mistakes = 0
         total_keystrokes = 0 
         max_rows, max_columns = stdscr.getmaxyx()
@@ -149,7 +151,7 @@ class TypingQuest:
                                 # Check if the newly typed character is a mistake
                                 if entered_key != self.paragraph[len(self.entered_text) - 1]:
                                     current_mistakes += 1
-                                    total_mistakes += 1
+                                    self.total_mistakes += 1
 
                 except TypeError:
                     pass
@@ -158,20 +160,28 @@ class TypingQuest:
                     stdscr.nodelay(False)
                     # Calculate final WPM using total keystrokes
                     final_time = time.time() - start_timer
-                    final_wpm = round((total_keystrokes / (final_time / 60)) / 5)
-                    final_accuracy = self.calculate_accuracy(self.entered_text, self.paragraph)
+                    self.final_wpm = round((total_keystrokes / (final_time / 60)) / 5)
+                    self.final_accuracy = self.calculate_accuracy(self.entered_text, self.paragraph)
 
                     stdscr.clear()
                     
-                    stdscr.addstr(15, 50, f"Final WPM: {final_wpm}", curses.color_pair(3))
-                    stdscr.addstr(15, 70, f"Final Accuracy: {final_accuracy}%", curses.color_pair(3))
-                    stdscr.addstr(15, 100, f"Total mistakes: {total_mistakes}", curses.color_pair(3))
+                    stdscr.addstr(15, 50, f"Final WPM: {self.final_wpm}", curses.color_pair(3))
+                    stdscr.addstr(15, 70, f"Final Accuracy: {self.final_accuracy}%", curses.color_pair(3))
+                    stdscr.addstr(15, 100, f"Total mistakes: {self.total_mistakes}", curses.color_pair(3))
                     stdscr.refresh()
                     stdscr.getkey()
+                    self.csv_writer_func()
                     break
 
             except curses.error:
                 pass
+
+    def csv_writer_func(self):
+        self.result_rows.extend([self.username,self.final_wpm,self.final_accuracy,self.total_mistakes])
+        with open("results.csv","a") as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter='\t')
+            csv_writer.writerow(self.result_rows)
+
 
     def main_func(self, stdscr):
         curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
