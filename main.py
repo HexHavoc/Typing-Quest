@@ -26,7 +26,6 @@ class TypingQuest:
     def get_username(self, stdscr):
         stdscr.clear()
 
-        h, w = stdscr.getmaxyx()
         input_y, input_x = 12, 15
         box_height, box_width = 1, 50
         
@@ -164,15 +163,27 @@ class TypingQuest:
                     self.final_accuracy = self.calculate_accuracy(self.entered_text, self.paragraph)
 
                     stdscr.clear()
-                    
-                    stdscr.addstr(15, 50, f"Final WPM: {self.final_wpm}", curses.color_pair(3))
-                    stdscr.addstr(15, 70, f"Final Accuracy: {self.final_accuracy}%", curses.color_pair(3))
-                    stdscr.addstr(15, 100, f"Total mistakes: {self.total_mistakes}", curses.color_pair(3))
-                    stdscr.refresh()
-                    stdscr.getkey()
-                    self.csv_writer_func()
-                    break
 
+                    stdscr.addstr(10, 70, f"THE FINAL RESULTS FOR {self.username}", curses.color_pair(4)|curses.A_UNDERLINE|curses.A_BOLD)
+                    
+                    stdscr.addstr(15, 50, f"Final WPM: {self.final_wpm}", curses.color_pair(1)|curses.A_BOLD)
+                    stdscr.addstr(15, 70, f"Final Accuracy: {self.final_accuracy}%", curses.color_pair(1)|curses.A_BOLD)
+                    stdscr.addstr(15, 100, f"Total mistakes: {self.total_mistakes}", curses.color_pair(1)|curses.A_BOLD)
+                    rectangle(stdscr, 8, 45, 17, 120)
+                    stdscr.addstr(23, 50, "PRESS ESC TO QUIT", curses.color_pair(5)|curses.A_BOLD)
+                    rectangle(stdscr, 20, 45, 25, 70)
+                    stdscr.addstr(23, 90, "PRESS ENTER TO TRY AGAIN", curses.color_pair(5)|curses.A_BOLD)
+                    rectangle(stdscr, 20, 85, 25, 118)
+                    stdscr.refresh()
+                    prompt_key = stdscr.getkey()
+
+                    if(prompt_key == "\n"):
+                        #self.csv_writer_func()
+                        stdscr.clear()
+                        self.welcome_message(stdscr)
+
+                    #self.csv_writer_func()
+                    break
             except curses.error:
                 pass
 
@@ -188,6 +199,7 @@ class TypingQuest:
         curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
         curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
         curses.init_pair(4, curses.COLOR_CYAN, curses.COLOR_BLACK)
+        curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)
         self.welcome_message(stdscr)
 
 
