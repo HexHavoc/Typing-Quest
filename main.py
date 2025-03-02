@@ -10,10 +10,11 @@ class TypingQuest:
         stdscr.addstr("Welcome to the Ultimate Typing Test! 🎉\n")
         stdscr.addstr("\nSharpen your skills, improve your speed, and challenge yourself to type like a pro\n")
         stdscr.addstr("\n💻 How it works:\n")
-        stdscr.addstr("\n1. You'll be presented with a passage to type.\n")
-        stdscr.addstr("\n2. Type as accurately and as quickly as you can!\n")
-        stdscr.addstr("\n3. Your speed and accuracy will be calculated at the end.\n")
-        stdscr.addstr("\n4. After 5 mistakes, you must fix them before continuing.\n")
+        stdscr.addstr("\n1. You need to type your username when prompted, So we can store your results and display it on our leaderboard.\n")
+        stdscr.addstr("\n2. You'll be presented with a passage to type.\n")
+        stdscr.addstr("\n3. Type as accurately and as quickly as you can!\n")
+        stdscr.addstr("\n4. Your speed and accuracy will be calculated at the end.\n")
+        stdscr.addstr("\n5. After 5 mistakes, you must fix them before continuing.\n")
         stdscr.addstr("\nReady to take on the challenge? Let's get typing! 🖋️✨\n")
         stdscr.refresh()
         stdscr.getkey()
@@ -142,6 +143,7 @@ class TypingQuest:
 
                     elif ord(entered_key) == 27:
                         break
+
                     else:
                         if current_mistakes < 5:
                             if len(self.entered_text) < len(self.paragraph):
@@ -157,7 +159,6 @@ class TypingQuest:
 
                 if len(self.entered_text) == len(self.paragraph):
                     stdscr.nodelay(False)
-                    # Calculate final WPM using total keystrokes
                     final_time = time.time() - start_timer
                     self.final_wpm = round((total_keystrokes / (final_time / 60)) / 5)
                     self.final_accuracy = self.calculate_accuracy(self.entered_text, self.paragraph)
@@ -170,10 +171,16 @@ class TypingQuest:
                     stdscr.addstr(15, 70, f"Final Accuracy: {self.final_accuracy}%", curses.color_pair(1)|curses.A_BOLD)
                     stdscr.addstr(15, 100, f"Total mistakes: {self.total_mistakes}", curses.color_pair(1)|curses.A_BOLD)
                     rectangle(stdscr, 8, 45, 17, 120)
-                    stdscr.addstr(23, 50, "PRESS ESC TO QUIT", curses.color_pair(5)|curses.A_BOLD)
-                    rectangle(stdscr, 20, 45, 25, 70)
-                    stdscr.addstr(23, 90, "PRESS ENTER TO TRY AGAIN", curses.color_pair(5)|curses.A_BOLD)
-                    rectangle(stdscr, 20, 85, 25, 118)
+
+                    stdscr.addstr(23, 5, "PRESS ESC TO QUIT", curses.color_pair(5)|curses.A_BOLD)
+                    rectangle(stdscr, 20, 1, 25, 25)
+
+                    stdscr.addstr(23, 70, "PRESS ENTER TO TRY AGAIN", curses.color_pair(5)|curses.A_BOLD)
+                    rectangle(stdscr, 20, 65, 25, 97)
+
+                    stdscr.addstr(23, 135, "PRESS L TO CHECK THE LEADERBOARD", curses.color_pair(5)|curses.A_BOLD)
+                    rectangle(stdscr, 20, 130, 25, 170)
+
                     stdscr.refresh()
                     prompt_key = stdscr.getkey()
 
