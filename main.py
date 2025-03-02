@@ -1,4 +1,5 @@
 import curses
+from curses.textpad import Textbox, rectangle
 import time
 
 
@@ -15,7 +16,40 @@ class TypingQuest:
         stdscr.addstr("\nReady to take on the challenge? Let's get typing! 🖋️✨\n")
         stdscr.refresh()
         stdscr.getkey()
+        
+        # Get username with proper input field
+        username = self.get_username(stdscr)
+        self.username = username
         self.typing_tester(stdscr)
+    
+    def get_username(self, stdscr):
+        stdscr.clear()
+
+        h, w = stdscr.getmaxyx()
+        input_y, input_x = 12, 15
+        box_height, box_width = 3, 50
+        
+        rectangle(stdscr, input_y-1, input_x-1, input_y+1, input_x+box_width)
+        
+
+        stdscr.addstr(input_y-2, input_x, "Enter your username:")
+        stdscr.refresh()
+        
+        win = curses.newwin(1, box_width-2, input_y, input_x)
+        box = Textbox(win)
+     
+        stdscr.addstr(input_y+3, input_x, "Press Enter to confirm")
+        stdscr.refresh()
+        
+        curses.curs_set(1)
+        
+        box.edit()
+        
+        curses.curs_set(0)
+        
+        # Get resulting username and strip whitespace
+        username = box.gather().strip()
+        return username
 
     def paragraph_loader(self):
         with open("story.txt", "r") as f:
@@ -57,12 +91,15 @@ class TypingQuest:
         self.entered_text = []
         total_mistakes = 0
         current_mistakes = 0
-        total_keystrokes = 0  # Track total valid keystrokes
+        total_keystrokes = 0 
         max_rows, max_columns = stdscr.getmaxyx()
         start_timer = time.time()
         stdscr.nodelay(True)
         start_row = 1
         stdscr.clear()
+
+        if hasattr(self, 'username') and self.username:
+            stdscr.addstr(6 , 0 , f"User: {self.username}", curses.color_pair(4)| curses.A_BOLD)
 
         while True:
             try:
@@ -123,10 +160,12 @@ class TypingQuest:
                     final_time = time.time() - start_timer
                     final_wpm = round((total_keystrokes / (final_time / 60)) / 5)
                     final_accuracy = self.calculate_accuracy(self.entered_text, self.paragraph)
+
+                    stdscr.clear()
                     
-                    stdscr.addstr(6, 50, f"Final WPM: {final_wpm}", curses.color_pair(3))
-                    stdscr.addstr(6, 70, f"Final Accuracy: {final_accuracy}%", curses.color_pair(3))
-                    stdscr.addstr(6, 100, f"Total mistakes: {total_mistakes}", curses.color_pair(3))
+                    stdscr.addstr(15, 50, f"Final WPM: {final_wpm}", curses.color_pair(3))
+                    stdscr.addstr(15, 70, f"Final Accuracy: {final_accuracy}%", curses.color_pair(3))
+                    stdscr.addstr(15, 100, f"Total mistakes: {total_mistakes}", curses.color_pair(3))
                     stdscr.refresh()
                     stdscr.getkey()
                     break
@@ -138,6 +177,7 @@ class TypingQuest:
         curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
         curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
         curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+        curses.init_pair(4, curses.COLOR_CYAN, curses.COLOR_BLACK)
         self.welcome_message(stdscr)
 
 
