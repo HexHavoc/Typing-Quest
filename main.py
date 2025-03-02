@@ -178,7 +178,7 @@ class TypingQuest:
                     stdscr.addstr(23, 70, "PRESS ENTER TO TRY AGAIN", curses.color_pair(5)|curses.A_BOLD)
                     rectangle(stdscr, 20, 65, 25, 97)
 
-                    stdscr.addstr(23, 135, "PRESS L TO CHECK THE LEADERBOARD", curses.color_pair(5)|curses.A_BOLD)
+                    stdscr.addstr(23, 135, "PRESS l TO CHECK THE LEADERBOARD", curses.color_pair(5)|curses.A_BOLD)
                     rectangle(stdscr, 20, 130, 25, 170)
 
                     stdscr.refresh()
@@ -188,6 +188,18 @@ class TypingQuest:
                         #self.csv_writer_func()
                         stdscr.clear()
                         self.welcome_message(stdscr)
+
+                    elif(prompt_key == "l"):
+                        stdscr.clear()
+                        exit_number = self.display_leaderboard(stdscr)
+
+                        if(exit_number == 27):
+                            stdscr.clear()
+                            break
+
+                        else:
+                            stdscr.clear()
+                            self.welcome_message(stdscr)
 
                     #self.csv_writer_func()
                     break
@@ -199,6 +211,124 @@ class TypingQuest:
         with open("results.csv","a") as csv_file:
             csv_writer = csv.writer(csv_file, delimiter='\t')
             csv_writer.writerow(self.result_rows)
+
+
+    def display_leaderboard(self, stdscr):
+        stdscr.clear()
+        
+      
+        leaderboard_data = []
+        try:
+            with open("results.csv", "r") as csv_file:
+                header = next(csv.reader(csv_file, delimiter='\t'))
+                csv_file.seek(0)
+                
+               
+                csv_reader = csv.reader(csv_file, delimiter='\t')
+                next(csv_reader)  
+                for row in csv_reader:
+                    if len(row) >= 4:  
+                        username = row[0]
+                        wpm = float(row[1])
+                        accuracy = float(row[2])
+                        mistakes = int(row[3])
+                        leaderboard_data.append({
+                            'username': username,
+                            'wpm': wpm,
+                            'accuracy': accuracy,
+                            'mistakes': mistakes
+                        })
+        except Exception as e:
+        
+            stdscr.addstr(10, 50, f"Error loading leaderboard: {str(e)}")
+            stdscr.refresh()
+            stdscr.getkey()
+            return
+        
+ 
+        leaderboard_data.sort(key=lambda x: x['wpm'], reverse=True)
+        
+     
+        stdscr.addstr(5, 73, "🏆 TYPING QUEST LEADERBOARD 🏆", curses.color_pair(5) | curses.A_BOLD | curses.A_UNDERLINE)
+        
+     
+        header_y = 10
+        stdscr.addstr(header_y, 40, "RANK", curses.color_pair(4) | curses.A_BOLD)
+        stdscr.addstr(header_y, 55, "USERNAME", curses.color_pair(4) | curses.A_BOLD)
+        stdscr.addstr(header_y, 85, "WPM", curses.color_pair(4) | curses.A_BOLD)
+        stdscr.addstr(header_y, 105, "ACCURACY", curses.color_pair(4) | curses.A_BOLD)
+        stdscr.addstr(header_y, 125, "MISTAKES", curses.color_pair(4) | curses.A_BOLD)
+        
+
+        for i in range(35, 145):
+            stdscr.addstr(header_y + 1, i, "━", curses.color_pair(3))
+        
+        for idx, entry in enumerate(leaderboard_data):
+            row_y = header_y + 3 + (idx * 2)
+            
+
+            if row_y >= stdscr.getmaxyx()[0] - 5:
+                break
+            
+
+            rank_color = curses.color_pair(1)  
+            if idx == 0:
+                rank_color = curses.color_pair(5) | curses.A_BOLD  
+            elif idx == 1:
+                rank_color = curses.color_pair(3) | curses.A_BOLD  
+            elif idx == 2:
+                rank_color = curses.color_pair(4) | curses.A_BOLD  
+            
+    
+            rank_display = f"#{idx + 1}"
+            stdscr.addstr(row_y, 40, rank_display, rank_color)
+            
+
+            username = entry['username']
+            if len(username) > 20:
+                username = username[:17] + "..."
+            stdscr.addstr(row_y, 55, username, curses.color_pair(1))
+            
+            # WPM
+            wpm_color = curses.color_pair(1)
+            if entry['wpm'] >= 70:
+                wpm_color = curses.color_pair(5) | curses.A_BOLD 
+            elif entry['wpm'] >= 50:
+                wpm_color = curses.color_pair(3) 
+            stdscr.addstr(row_y, 85, f"{entry['wpm']:.0f}", wpm_color)
+            
+            # Accuracy
+            acc_color = curses.color_pair(1)
+            if entry['accuracy'] >= 98:
+                acc_color = curses.color_pair(5) | curses.A_BOLD 
+            elif entry['accuracy'] >= 95:
+                acc_color = curses.color_pair(3) 
+            elif entry['accuracy'] < 90:
+                acc_color = curses.color_pair(2) 
+            stdscr.addstr(row_y, 105, f"{entry['accuracy']:.2f}%", acc_color)
+            
+            # Mistakes
+            mistake_color = curses.color_pair(1)
+            if entry['mistakes'] <= 2:
+                mistake_color = curses.color_pair(5) | curses.A_BOLD 
+            elif entry['mistakes'] >= 5:
+                mistake_color = curses.color_pair(2) 
+            stdscr.addstr(row_y, 125, str(entry['mistakes']), mistake_color)
+    
+
+        rectangle(stdscr, header_y - 2, 35, row_y + 2, 145)
+
+        stdscr.addstr(35, 10, "PRESS ENTER TO TRY AGAIN", curses.color_pair(5))
+        rectangle(stdscr, 33, 5, 36, 36)
+
+        stdscr.addstr(35, 150, "PRESS ESC TO EXIT", curses.color_pair(5))
+        rectangle(stdscr, 33, 145, 36, 170)
+        
+        stdscr.refresh()
+        leaderboard_key = stdscr.getkey()
+
+        if(ord(leaderboard_key) == 27):
+            return 27
 
 
     def main_func(self, stdscr):
