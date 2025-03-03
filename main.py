@@ -66,24 +66,22 @@ class TypingQuest:
         if not typed_text:
             return 100.0
         
+        if isinstance(typed_text, list):
+            typed_text = ''.join(typed_text)
+        
         total_chars = len(typed_text)
         correct_chars = sum(a == b for a, b in zip(typed_text, target_text[:len(typed_text)]))
         return round((correct_chars / total_chars) * 100, 2)
 
     def wpm_calculator(self, start_timer, current_mistakes, total_keystrokes, stdscr):
-        
-        # Calculate WPM using total keystrokes instead of current text length
         time_passed = max(time.time() - start_timer, 1)
         wpm = round((total_keystrokes / (time_passed / 60)) / 5)
         
-        # Calculate accuracy using the dedicated method
         accuracy = self.calculate_accuracy(self.entered_text, self.paragraph)
-        
-        # Clear previous display
+
         stdscr.addstr(4, 50, " " * 20)
         stdscr.addstr(4, 70, " " * 20)
         
-        # Display stats
         if current_mistakes >= 5:
             stdscr.addstr(4, 50, "Fix mistakes!", curses.color_pair(2))
         else:
