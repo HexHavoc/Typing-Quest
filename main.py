@@ -63,7 +63,8 @@ class TypingQuest:
         return paragraph
 
     def calculate_accuracy(self, typed_text, target_text):
-        """Calculate accuracy based on correct characters vs total characters typed."""
+        """Calculate accuracy based on correct characters vs total characters typed,
+        with a much slower increase rate."""
         if not typed_text:
             return 100.0
         
@@ -72,7 +73,22 @@ class TypingQuest:
         
         total_chars = len(typed_text)
         correct_chars = sum(a == b for a, b in zip(typed_text, target_text[:len(typed_text)]))
-        return round((correct_chars / total_chars) * 100, 2)
+        
+
+        raw_accuracy = (correct_chars / total_chars) * 100
+        
+        if raw_accuracy > 80:
+     
+            adjusted_accuracy = 60 + (100 - 60) * ((raw_accuracy - 80) / 20) ** 2.5
+        elif raw_accuracy > 60:
+       
+            adjusted_accuracy = 40 + (60 - 40) * ((raw_accuracy - 60) / 20) ** 1.8
+        else:
+      
+            adjusted_accuracy = raw_accuracy * 0.9
+        
+    
+        return min(round(adjusted_accuracy, 2), 100.0)
 
     def wpm_calculator(self, start_timer, current_mistakes, total_keystrokes, stdscr):
         time_passed = max(time.time() - start_timer, 1)
@@ -83,7 +99,7 @@ class TypingQuest:
         stdscr.addstr(4, 50, " " * 20)
         stdscr.addstr(4, 70, " " * 20)
         
-        if current_mistakes >= 10:
+        if current_mistakes >= 5:
             stdscr.addstr(4, 50, "Fix mistakes!", curses.color_pair(2))
         else:
             stdscr.addstr(4, 50, f"WPM: {wpm}", curses.color_pair(3))
@@ -110,7 +126,7 @@ class TypingQuest:
                 stdscr.addstr(1, 0, self.paragraph)
                 self.wpm_calculator(start_timer, current_mistakes, total_keystrokes, stdscr)
                 
-                stdscr.addstr(4, 95, f"Mistakes: {current_mistakes}/10", 
+                stdscr.addstr(4, 95, f"Mistakes: {current_mistakes}/5", 
                             curses.color_pair(2) if current_mistakes > 0 else curses.color_pair(1))
 
                 for character_position, entered_character in enumerate(self.entered_text):
@@ -147,7 +163,7 @@ class TypingQuest:
                         break
 
                     else:
-                        if current_mistakes < 10:
+                        if current_mistakes < 5:
                             if len(self.entered_text) < len(self.paragraph):
                                 self.entered_text.append(entered_key)
                                 total_keystrokes += 1
@@ -233,9 +249,10 @@ class TypingQuest:
                             user_exists = True
                             user_index = i
         except:
- 
+            # If there's an issue reading the file, we'll treat it as empty
             pass
-       
+        
+        # Check if user exists and compare scores
         updated = False
         if user_exists:
             # Get existing scores
@@ -307,11 +324,13 @@ class TypingQuest:
             stdscr.getkey()
             return
         
- 
+        # Sort the leaderboard by WPM (highest first)
         leaderboard_data.sort(key=lambda x: x['wpm'], reverse=True)
         
-     
-        stdscr.addstr(5, 73, "🏆 TYPING QUEST LEADERBOARD 🏆", curses.color_pair(5) | curses.A_BOLD | curses.A_UNDERLINE)
+        # Limit to top 10 entries
+        leaderboard_data = leaderboard_data[:10]
+        
+        stdscr.addstr(5, 73, "🏆 TOP 10 TYPING CHAMPIONS 🏆", curses.color_pair(5) | curses.A_BOLD | curses.A_UNDERLINE)
         
      
         header_y = 10
@@ -329,18 +348,13 @@ class TypingQuest:
         for idx, entry in enumerate(leaderboard_data):
             row_y = header_y + 3 + (idx * 2)
             
-
-            if row_y >= stdscr.getmaxyx()[0] - 5:
-                break
-            
-
             rank_color = curses.color_pair(1)  
             if idx == 0:
-                rank_color = curses.color_pair(5) | curses.A_BOLD  
+                rank_color = curses.color_pair(5) | curses.A_BOLD  # Gold for 1st
             elif idx == 1:
-                rank_color = curses.color_pair(3) | curses.A_BOLD  
+                rank_color = curses.color_pair(3) | curses.A_BOLD  # Silver for 2nd
             elif idx == 2:
-                rank_color = curses.color_pair(4) | curses.A_BOLD  
+                rank_color = curses.color_pair(4) | curses.A_BOLD  # Bronze for 3rd
             
     
             rank_display = f"#{idx + 1}"
@@ -400,7 +414,7 @@ class TypingQuest:
         curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
         curses.init_pair(4, curses.COLOR_CYAN, curses.COLOR_BLACK)
         curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        self.welcome_message(stdscr)    
+        self.welcome_message(stdscr)
 
 
 typer = TypingQuest()
