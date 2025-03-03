@@ -3,6 +3,7 @@ import csv
 from curses.textpad import Textbox, rectangle
 import time
 import random
+import os
 
 
 class TypingQuest:
@@ -209,11 +210,70 @@ class TypingQuest:
                 pass
 
     def csv_writer_func(self):
-        self.result_rows.extend([self.username,self.final_wpm,self.final_accuracy,self.total_mistakes])
-        with open("results.csv","a") as csv_file:
-            csv_writer = csv.writer(csv_file, delimiter='\t')
-            csv_writer.writerow(self.result_rows)
-
+        # Create results.csv if it doesn't exist with header row
+        if not os.path.exists("results.csv"):
+            with open("results.csv", "w") as csv_file:
+                csv_writer = csv.writer(csv_file, delimiter='\t')
+                csv_writer.writerow(["username", "wpm", "accuracy", "mistakes"])
+        
+        # Read existing data
+        existing_data = []
+        user_exists = False
+        user_index = -1
+        
+        try:
+            with open("results.csv", "r") as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter='\t')
+                header = next(csv_reader, None)  # Skip header row
+                
+                for i, row in enumerate(csv_reader):
+                    if len(row) >= 4:
+                        existing_data.append(row)
+                        if row[0] == self.username:
+                            user_exists = True
+                            user_index = i
+        except:
+            # If there's an issue reading the file, we'll treat it as empty
+            pass
+        
+        # Check if user exists and compare scores
+        updated = False
+        if user_exists:
+            # Get existing scores
+            existing_wpm = float(existing_data[user_index][1])
+            existing_accuracy = float(existing_data[user_index][2])
+            existing_mistakes = int(existing_data[user_index][3])
+            
+            # Compare with new scores
+            improved = False
+            
+            # Update WPM if improved
+            if self.final_wpm > existing_wpm:
+                existing_data[user_index][1] = str(self.final_wpm)
+                improved = True
+                
+            # Update accuracy if improved
+            if self.final_accuracy > existing_accuracy:
+                existing_data[user_index][2] = str(self.final_accuracy)
+                improved = True
+                
+            # Update mistakes if fewer (lower is better)
+            if self.total_mistakes < existing_mistakes:
+                existing_data[user_index][3] = str(self.total_mistakes)
+                improved = True
+                
+            updated = improved
+        else:
+            # Add new user
+            existing_data.append([self.username, str(self.final_wpm), str(self.final_accuracy), str(self.total_mistakes)])
+            updated = True
+        
+        # Write updated data back to file if any changes were made
+        if updated:
+            with open("results.csv", "w") as csv_file:
+                csv_writer = csv.writer(csv_file, delimiter='\t')
+                csv_writer.writerow(["username", "wpm", "accuracy", "mistakes"])  # Write header
+                csv_writer.writerows(existing_data)
 
     def display_leaderboard(self, stdscr):
         stdscr.clear()
@@ -341,7 +401,7 @@ class TypingQuest:
         curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
         curses.init_pair(4, curses.COLOR_CYAN, curses.COLOR_BLACK)
         curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        self.welcome_message(stdscr)
+        self.welcome_message(stdscr)    
 
 
 typer = TypingQuest()
