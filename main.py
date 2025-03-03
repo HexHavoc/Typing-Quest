@@ -2,6 +2,7 @@ import curses
 import csv
 from curses.textpad import Textbox, rectangle
 import time
+import random
 
 
 class TypingQuest:
@@ -53,8 +54,11 @@ class TypingQuest:
         return username
 
     def paragraph_loader(self):
-        with open("prompt.txt", "r") as f:
+        random_paragraph_number = random.randint(1,50)  
+
+        with open(f"paragraphs/paragraph_{random_paragraph_number}.txt", "r") as f:
             paragraph = f.read()
+
         return paragraph
 
     def calculate_accuracy(self, typed_text, target_text):
@@ -67,7 +71,6 @@ class TypingQuest:
         return round((correct_chars / total_chars) * 100, 2)
 
     def wpm_calculator(self, start_timer, current_mistakes, total_keystrokes, stdscr):
-        typed_chars = len(self.entered_text)
         
         # Calculate WPM using total keystrokes instead of current text length
         time_passed = max(time.time() - start_timer, 1)
@@ -148,14 +151,13 @@ class TypingQuest:
                         if current_mistakes < 5:
                             if len(self.entered_text) < len(self.paragraph):
                                 self.entered_text.append(entered_key)
-                                total_keystrokes += 1  # Increment keystrokes for valid characters
-                                # Check if the newly typed character is a mistake
+                                total_keystrokes += 1
                                 if entered_key != self.paragraph[len(self.entered_text) - 1]:
                                     current_mistakes += 1
                                     self.total_mistakes += 1
 
                 except TypeError:
-                    pass
+                    pass    
 
                 if len(self.entered_text) == len(self.paragraph):
                     stdscr.nodelay(False)
@@ -185,12 +187,13 @@ class TypingQuest:
                     prompt_key = stdscr.getkey()
 
                     if(prompt_key == "\n"):
-                        #self.csv_writer_func()
+                        self.csv_writer_func()
                         stdscr.clear()
                         self.welcome_message(stdscr)
 
                     elif(prompt_key == "l"):
                         stdscr.clear()
+                        self.csv_writer_func()
                         exit_number = self.display_leaderboard(stdscr)
 
                         if(exit_number == 27):
@@ -198,10 +201,11 @@ class TypingQuest:
                             break
 
                         else:
-                            stdscr.clear()
+                            stdscr.clear()  
                             self.welcome_message(stdscr)
+                            break
 
-                    #self.csv_writer_func()
+                    self.csv_writer_func()
                     break
             except curses.error:
                 pass
@@ -226,6 +230,7 @@ class TypingQuest:
                
                 csv_reader = csv.reader(csv_file, delimiter='\t')
                 next(csv_reader)  
+                
                 for row in csv_reader:
                     if len(row) >= 4:  
                         username = row[0]
@@ -263,6 +268,7 @@ class TypingQuest:
         for i in range(35, 145):
             stdscr.addstr(header_y + 1, i, "━", curses.color_pair(3))
         
+
         for idx, entry in enumerate(leaderboard_data):
             row_y = header_y + 3 + (idx * 2)
             
