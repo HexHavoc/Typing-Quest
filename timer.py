@@ -43,6 +43,7 @@ def timer_mode(self,stdscr):
             # Check if timer has completed
             if remaining <= 0:
                 stdscr.nodelay(False)
+                stdscr.attrset(0)
                 final_time = time.time() - start_timer
                 self.final_wpm = round((total_keystrokes / (final_time / 60)) / 5)
                 self.final_accuracy = self.calculate_accuracy(self.entered_text, self.paragraph)
@@ -57,13 +58,13 @@ def timer_mode(self,stdscr):
                 rectangle(stdscr, 8, 45, 17, 120)
 
                 stdscr.addstr(23, 5, "PRESS ESC TO QUIT", curses.color_pair(5)|curses.A_BOLD)
-                rectangle(stdscr, 20, 1, 25, 25,curses.color_pair(6))
+                rectangle(stdscr, 20, 1, 25, 25)
 
                 stdscr.addstr(23, 70, "PRESS ENTER TO TRY AGAIN", curses.color_pair(5)|curses.A_BOLD)
-                rectangle(stdscr, 20, 65, 25, 97,curses.color_pair(6))
+                rectangle(stdscr, 20, 65, 25, 97)
 
                 stdscr.addstr(23, 135, "PRESS l TO CHECK THE LEADERBOARD", curses.color_pair(5)|curses.A_BOLD)
-                rectangle(stdscr, 20, 130, 25, 170,curses.color_pair(6))
+                rectangle(stdscr, 20, 130, 25, 170)
 
                 stdscr.refresh()
                 prompt_key = stdscr.getkey()
@@ -149,6 +150,7 @@ def timer_mode(self,stdscr):
 
             if len(self.entered_text) == len(self.paragraph):
                 stdscr.nodelay(False)
+                stdscr.attrset(0)
                 final_time = time.time() - start_timer
                 self.final_wpm = round((total_keystrokes / (final_time / 60)) / 5)
                 self.final_accuracy = self.calculate_accuracy(self.entered_text, self.paragraph)

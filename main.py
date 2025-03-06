@@ -95,10 +95,6 @@ class TypingQuest:
 
         return paragraph
     
-
-    def timer_mode_paragraph(self):
-        pass
-
     def calculate_accuracy(self, typed_text, target_text):
         """Calculate accuracy based on correct characters vs total characters typed,
         with a much slower increase rate."""
