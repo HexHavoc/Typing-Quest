@@ -108,8 +108,10 @@ class TypingQuest:
         stdscr.addstr(4, 50, " " * 20)
         stdscr.addstr(4, 70, " " * 20)
         
-        if current_mistakes >= 5:
+        if current_mistakes >= 10:
             stdscr.addstr(4, 50, "Fix mistakes!", curses.color_pair(2))
+            
+
         else:
             stdscr.addstr(4, 50, f"WPM: {wpm}", curses.color_pair(3))
             stdscr.addstr(4, 70, f"Accuracy: {accuracy}%", curses.color_pair(3))
@@ -134,9 +136,15 @@ class TypingQuest:
             try:
                 stdscr.addstr(1, 0, self.paragraph)
                 self.wpm_calculator(start_timer, current_mistakes, total_keystrokes, stdscr)
+
+
+                stdscr.addstr(4, 95, " " * 20)
+
                 
-                stdscr.addstr(4, 95, f"Mistakes: {current_mistakes}/5", 
+                stdscr.addstr(4, 95, f"Mistakes: {current_mistakes}/10", 
                             curses.color_pair(2) if current_mistakes > 0 else curses.color_pair(1))
+                
+                
 
                 for character_position, entered_character in enumerate(self.entered_text):
                     correct_character = self.paragraph[character_position]
@@ -172,7 +180,7 @@ class TypingQuest:
                         break
 
                     else:
-                        if current_mistakes < 5:
+                        if current_mistakes < 10:
                             if len(self.entered_text) < len(self.paragraph):
                                 self.entered_text.append(entered_key)
                                 total_keystrokes += 1
