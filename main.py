@@ -4,20 +4,21 @@ from curses.textpad import Textbox, rectangle
 import time
 import random
 import os
+from timer import timer_mode
 
 
 class TypingQuest:
     def welcome_message(self, stdscr):
         stdscr.clear()
-        stdscr.addstr("Welcome to the Ultimate Typing Test! 🎉\n")
-        stdscr.addstr("\nSharpen your skills, improve your speed, and challenge yourself to type like a pro\n")
-        stdscr.addstr("\n💻 How it works:\n")
-        stdscr.addstr("\n1. You need to type your username when prompted, So we can store your results and display it on our leaderboard.\n")
-        stdscr.addstr("\n2. You'll be presented with a passage to type.\n")
-        stdscr.addstr("\n3. Type as accurately and as quickly as you can!\n")
-        stdscr.addstr("\n4. Your speed and accuracy will be calculated at the end.\n")
-        stdscr.addstr("\n5. After 5 mistakes, you must fix them before continuing.\n")
-        stdscr.addstr("\nReady to take on the challenge? Let's get typing! 🖋️✨\n")
+        stdscr.addstr("Welcome to the Ultimate Typing Test! 🎉\n",curses.color_pair(6))
+        stdscr.addstr("\nSharpen your skills, improve your speed, and challenge yourself to type like a pro\n",curses.color_pair(6))
+        stdscr.addstr("\n💻 How it works:\n",curses.color_pair(6))
+        stdscr.addstr("\n1. You need to type your username when prompted, So we can store your results and display it on our leaderboard.\n",curses.color_pair(6))
+        stdscr.addstr("\n2. You'll be presented with a passage to type.\n",curses.color_pair(6))
+        stdscr.addstr("\n3. Type as accurately and as quickly as you can!\n",curses.color_pair(6))
+        stdscr.addstr("\n4. Your speed and accuracy will be calculated at the end.\n",curses.color_pair(6))
+        stdscr.addstr("\n5. After 5 mistakes, you must fix them before continuing.\n",curses.color_pair(6))
+        stdscr.addstr("\nReady to take on the challenge? Let's get typing! 🖋️✨\n",curses.color_pair(6))
         stdscr.refresh()
         stdscr.getkey()
         
@@ -33,8 +34,31 @@ class TypingQuest:
             stdscr.getkey()
             self.username = self.get_username(stdscr)
 
-        self.typing_tester(stdscr)
-    
+        self.select_typing_mode(stdscr)
+
+
+    def select_typing_mode(self,stdscr):
+        stdscr.clear()
+        stdscr.addstr(10, 61, f"PRESS t FOR TIMER MODE AND n FOR NORMAL MODE", curses.color_pair(4)|curses.A_UNDERLINE|curses.A_BOLD)
+
+        stdscr.addstr(23, 50, "TIMER MODE", curses.color_pair(5)|curses.A_BOLD)
+        rectangle(stdscr, 20, 45, 25, 65)
+
+        stdscr.addstr(23, 100, "NORMAL MODE", curses.color_pair(5)|curses.A_BOLD)
+        rectangle(stdscr, 20, 95, 25, 115)
+
+        stdscr.refresh()
+        mode_key = stdscr.getkey()
+
+        if(mode_key == "n"):
+            self.typing_tester(stdscr)
+
+        else:
+            timer_mode(self,stdscr)
+
+        
+
+
     def get_username(self, stdscr):
         stdscr.clear()
 
@@ -48,7 +72,7 @@ class TypingQuest:
         stdscr.refresh()
         
         win = curses.newwin(box_height, box_width-2, input_y, input_x)
-        box = Textbox(win)
+        box = Textbox(win,curses.color_pair(6))
      
         stdscr.addstr(input_y+3, input_x, "Press Enter to confirm",curses.color_pair(1))
         stdscr.refresh()
@@ -70,6 +94,10 @@ class TypingQuest:
             paragraph = f.read()
 
         return paragraph
+    
+
+    def timer_mode_paragraph(self):
+        pass
 
     def calculate_accuracy(self, typed_text, target_text):
         """Calculate accuracy based on correct characters vs total characters typed,
@@ -429,6 +457,7 @@ class TypingQuest:
         curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
         curses.init_pair(4, curses.COLOR_CYAN, curses.COLOR_BLACK)
         curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_BLACK)
         self.welcome_message(stdscr)
 
 
