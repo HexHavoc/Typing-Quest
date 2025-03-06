@@ -11,7 +11,6 @@ def timer_mode(self,stdscr):
     total_keystrokes = 0 
     max_rows, max_columns = stdscr.getmaxyx()
     start_timer = time.time()
-    height, width = stdscr.getmaxyx()
     duration = 60
     start_time = time.time()
     stdscr.nodelay(True)
@@ -35,7 +34,7 @@ def timer_mode(self,stdscr):
             stdscr.attron(curses.color_pair(color_pair))
 
             # Display time
-            stdscr.addstr(height // 2, (width - len(time_str)) // 2, time_str, curses.A_BOLD)
+            stdscr.addstr(6, 150, time_str, curses.A_BOLD|curses.color_pair(5))
             
             # Refresh screen
             stdscr.refresh()
