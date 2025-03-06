@@ -29,7 +29,7 @@ class TypingQuest:
             if(self.username != ''):
                 break
 
-            stdscr.addstr(17, 15, "Can't leave the username empty(Press enter to type)",curses.color_pair(1))
+            stdscr.addstr(17, 15, "The username field cannot be empty(Press enter to type)",curses.color_pair(2))
             stdscr.refresh()
             stdscr.getkey()
             self.username = self.get_username(stdscr)
