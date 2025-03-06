@@ -28,7 +28,7 @@ class TypingQuest:
             if(self.username != ''):
                 break
 
-            stdscr.addstr(17, 15, "Can't leave the username blank(Press enter to type again)",curses.color_pair(1))
+            stdscr.addstr(17, 15, "Can't leave the username empty(Press enter to type)",curses.color_pair(1))
             stdscr.refresh()
             stdscr.getkey()
             self.username = self.get_username(stdscr)
@@ -413,10 +413,8 @@ class TypingQuest:
         rectangle(stdscr, header_y - 2, 35, row_y + 2, 145)
 
         stdscr.addstr(35, 10, "PRESS ENTER TO TRY AGAIN", curses.color_pair(5))
-        rectangle(stdscr, 33, 5, 36, 36)
 
         stdscr.addstr(35, 150, "PRESS ESC TO EXIT", curses.color_pair(5))
-        rectangle(stdscr, 33, 145, 36, 170)
         
         stdscr.refresh()
         leaderboard_key = stdscr.getkey()
