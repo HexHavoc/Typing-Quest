@@ -24,6 +24,15 @@ class TypingQuest:
         # Get username with proper input field
         username = self.get_username(stdscr)
         self.username = username
+        while(self.username == ''):
+            if(self.username != ''):
+                break
+
+            stdscr.addstr(17, 15, "Can't leave the username blank(Press enter to type again)",curses.color_pair(1))
+            stdscr.refresh()
+            stdscr.getkey()
+            self.username = self.get_username(stdscr)
+
         self.typing_tester(stdscr)
     
     def get_username(self, stdscr):
