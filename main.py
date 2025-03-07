@@ -17,7 +17,7 @@ class TypingQuest:
         stdscr.addstr("\n2. You'll be presented with a passage to type.\n",curses.color_pair(6)|curses.A_BOLD)
         stdscr.addstr("\n3. Type as accurately and as quickly as you can!\n",curses.color_pair(6)|curses.A_BOLD)
         stdscr.addstr("\n4. Your speed and accuracy will be calculated at the end.\n",curses.color_pair(6)|curses.A_BOLD)
-        stdscr.addstr("\n5. After 5 mistakes, you must fix them before continuing.\n",curses.color_pair(6)|curses.A_BOLD)
+        stdscr.addstr("\n5. After 10 mistakes, you must fix them before continuing.\n",curses.color_pair(6)|curses.A_BOLD)
         stdscr.addstr("\nReady to take on the challenge? Let's get typing! 🖋️✨\n",curses.color_pair(6)|curses.A_BOLD)
         stdscr.refresh()
         stdscr.getkey()
