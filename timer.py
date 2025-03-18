@@ -2,6 +2,19 @@ import time
 import curses
 from curses.textpad import rectangle
 
+
+def end_screen_time(stdscr):
+    time.sleep(2)
+    stdscr.nodelay(False)
+    stdscr.clear()
+    stdscr.addstr(10, 80, f"THE TIMER ENDED", curses.color_pair(4)|curses.A_BOLD)
+    stdscr.addstr(15, 70, f"PRESS ANY KEY TO SEE THE RESULTS", curses.color_pair(4)|curses.A_BOLD)
+    stdscr.refresh()
+    stdscr.getkey()
+
+
+
+
 def timer_mode(self, stdscr):
     self.paragraph = self.paragraph_loader()
     self.entered_text = []
@@ -44,6 +57,7 @@ def timer_mode(self, stdscr):
     stdscr.addstr(6, 85, "    ")
     stdscr.refresh()
 
+
     while True:
         try:
             elapsed = time.time() - start_time
@@ -65,7 +79,7 @@ def timer_mode(self, stdscr):
             
             # Check if timer has completed
             if remaining <= 0:
-                stdscr.nodelay(False)
+                end_screen_time(stdscr)
                 stdscr.attrset(0)
                 final_time = time.time() - start_timer
                 self.final_wpm = round((total_keystrokes / (final_time / 60)) / 5)
