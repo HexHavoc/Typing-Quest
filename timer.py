@@ -2,7 +2,7 @@ import time
 import curses
 from curses.textpad import rectangle
 
-def timer_mode(self,stdscr):
+def timer_mode(self, stdscr):
     self.paragraph = self.paragraph_loader()
     self.entered_text = []
     self.result_rows = []
@@ -10,15 +10,39 @@ def timer_mode(self,stdscr):
     current_mistakes = 0
     total_keystrokes = 0 
     max_rows, max_columns = stdscr.getmaxyx()
+    start_row = 1
+    stdscr.nodelay(True)
+    stdscr.clear()
+    
+    # Display instructions and paragraph before starting the timer
+    stdscr.addstr(1, 0, self.paragraph, curses.color_pair(6))
+    
+    if hasattr(self, 'username') and self.username:
+        stdscr.addstr(6, 0, f"User: {self.username}", curses.color_pair(4) | curses.A_BOLD)
+    
+    # Clear the instruction
+    stdscr.addstr(6, 70, " " * 35)
+    
+    for i in range(5, 0, -1):
+        stdscr.addstr(6, 75, f"Starting in {i} seconds...", curses.color_pair(5) | curses.A_BOLD)
+        stdscr.refresh()
+        time.sleep(1)
+    
+    # Clear the countdown message
+    stdscr.addstr(6, 70, " " * 35)
+    stdscr.addstr(6, 85, "GO!", curses.color_pair(5) | curses.A_BOLD)
+    stdscr.refresh()
+
     start_timer = time.time()
     duration = 60
     start_time = time.time()
-    stdscr.nodelay(True)
-    start_row = 1
-    stdscr.clear()
-
-    if hasattr(self, 'username') and self.username:
-        stdscr.addstr(6 , 0 , f"User: {self.username}", curses.color_pair(4)| curses.A_BOLD)
+    
+    # Sleep briefly to allow the user to see "GO!" message
+    time.sleep(0.5)
+    
+    # Clear the GO! message
+    stdscr.addstr(6, 85, "    ")
+    stdscr.refresh()
 
     while True:
         try:
@@ -90,18 +114,14 @@ def timer_mode(self,stdscr):
                 self.csv_writer_func()
                 break
             
-            stdscr.addstr(1, 0, self.paragraph,curses.color_pair(6))
+            stdscr.addstr(1, 0, self.paragraph, curses.color_pair(6))
             self.wpm_calculator(start_timer, current_mistakes, total_keystrokes, stdscr)
 
-
             stdscr.addstr(4, 95, " " * 20)
-
             
             stdscr.addstr(4, 95, f"Mistakes: {current_mistakes}/10", 
                         curses.color_pair(2) if current_mistakes > 0 else curses.color_pair(1))
             
-            
-
             for character_position, entered_character in enumerate(self.entered_text):
                 correct_character = self.paragraph[character_position]
                 display_color = curses.color_pair(1)
