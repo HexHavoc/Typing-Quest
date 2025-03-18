@@ -7,10 +7,21 @@ def end_screen_time(stdscr):
     time.sleep(2)
     stdscr.nodelay(False)
     stdscr.clear()
-    stdscr.addstr(10, 80, f"THE TIMER ENDED", curses.color_pair(4)|curses.A_BOLD)
+    stdscr.addstr(10, 75, f"THE TIMER ENDED", curses.color_pair(4)|curses.A_BOLD)
     stdscr.addstr(15, 70, f"PRESS ANY KEY TO SEE THE RESULTS", curses.color_pair(4)|curses.A_BOLD)
     stdscr.refresh()
     stdscr.getkey()
+
+
+def end_screen_complete(stdscr):
+    stdscr.nodelay(False)
+    stdscr.clear()
+    stdscr.addstr(10, 75, f"CALCULATING RESULTS..", curses.color_pair(4)|curses.A_BOLD)
+    time.sleep(3)
+    stdscr.addstr(15, 70, f"PRESS ANY KEY TO SEE THE RESULTS", curses.color_pair(4)|curses.A_BOLD)
+    stdscr.refresh()
+    stdscr.getkey()
+
 
 
 
@@ -182,7 +193,7 @@ def timer_mode(self, stdscr):
                 pass    
 
             if len(self.entered_text) == len(self.paragraph):
-                stdscr.nodelay(False)
+                end_screen_complete(stdscr)
                 stdscr.attrset(0)
                 final_time = time.time() - start_timer
                 self.final_wpm = round((total_keystrokes / (final_time / 60)) / 5)
