@@ -35,7 +35,9 @@ def timer_mode(self, stdscr):
     total_keystrokes = 0 
     max_rows, max_columns = stdscr.getmaxyx()
     start_row = 1
-    stdscr.nodelay(True)
+    
+    # Set nodelay to False during countdown
+    stdscr.nodelay(False)
     stdscr.clear()
     
     # Display instructions and paragraph before starting the timer
@@ -47,6 +49,7 @@ def timer_mode(self, stdscr):
     # Clear the instruction
     stdscr.addstr(6, 70, " " * 35)
     
+    # During countdown, clear any pending input
     for i in range(5, 0, -1):
         stdscr.addstr(6, 75, f"Starting in {i} seconds...", curses.color_pair(5) | curses.A_BOLD)
         stdscr.refresh()
@@ -57,16 +60,22 @@ def timer_mode(self, stdscr):
     stdscr.addstr(6, 85, "GO!", curses.color_pair(5) | curses.A_BOLD)
     stdscr.refresh()
 
-    start_timer = time.time()
-    duration = 60
-    start_time = time.time()
-    
     # Sleep briefly to allow the user to see "GO!" message
     time.sleep(0.5)
     
     # Clear the GO! message
     stdscr.addstr(6, 85, "    ")
     stdscr.refresh()
+    
+    # NOW set nodelay to True and start the timer
+    stdscr.nodelay(True)
+    curses.flushinp()  # Clear any keys pressed during countdown
+    start_timer = time.time()
+    start_time = time.time()
+    duration = 60
+
+    # Rest of your timer_mode function continues here
+    # ...
 
 
     while True:
