@@ -4,26 +4,24 @@ from curses.textpad import rectangle
 
 
 def end_screen_time(stdscr):
-    time.sleep(2)
     stdscr.nodelay(False)
     stdscr.clear()
     stdscr.addstr(10, 75, f"THE TIMER ENDED", curses.color_pair(4)|curses.A_BOLD)
-    stdscr.addstr(15, 70, f"PRESS ANY KEY TO SEE THE RESULTS", curses.color_pair(4)|curses.A_BOLD)
+    stdscr.addstr(15, 70, f"RESULTS WILL APPEAR IN 5 SECONDS", curses.color_pair(4)|curses.A_BOLD)
     stdscr.refresh()
-    stdscr.getkey()
+    time.sleep(5) 
+    curses.flushinp()
 
 
 def end_screen_complete(stdscr):
     stdscr.nodelay(False)
     stdscr.clear()
-    stdscr.addstr(10, 75, f"CALCULATING RESULTS..", curses.color_pair(4)|curses.A_BOLD)
-    time.sleep(3)
-    stdscr.addstr(15, 70, f"PRESS ANY KEY TO SEE THE RESULTS", curses.color_pair(4)|curses.A_BOLD)
+    stdscr.addstr(10, 75, f"THE TIMER ENDED", curses.color_pair(4)|curses.A_BOLD)
+    stdscr.addstr(15, 70, f"RESULTS WILL APPEAR IN 5 SECONDS", curses.color_pair(4)|curses.A_BOLD)
     stdscr.refresh()
-    stdscr.getkey()
-
-
-
+    time.sleep(5)
+    curses.flushinp()
+     
 
 
 def timer_mode(self, stdscr):
@@ -74,10 +72,7 @@ def timer_mode(self, stdscr):
     start_time = time.time()
     duration = 60
 
-    # Rest of your timer_mode function continues here
-    # ...
-
-
+    # Main game loop
     while True:
         try:
             elapsed = time.time() - start_time
