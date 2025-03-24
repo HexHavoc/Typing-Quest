@@ -6,20 +6,26 @@ from curses.textpad import rectangle
 def end_screen_time(stdscr):
     stdscr.nodelay(False)
     stdscr.clear()
-    stdscr.addstr(10, 75, f"THE TIMER ENDED", curses.color_pair(4)|curses.A_BOLD)
-    stdscr.addstr(15, 70, f"RESULTS WILL APPEAR IN 5 SECONDS", curses.color_pair(4)|curses.A_BOLD)
+    stdscr.addstr(10, 77, f"THE TIMER ENDED", curses.color_pair(4)|curses.A_BOLD)
+    for i in range(5,0,-1):
+        stdscr.addstr(15, 75, f"RESULTS WILL APPEAR IN {i} SECONDS", curses.color_pair(4)|curses.A_BOLD)
+        stdscr.refresh()
+        time.sleep(1)
+
     stdscr.refresh()
-    time.sleep(5) 
     curses.flushinp()
 
 
 def end_screen_complete(stdscr):
     stdscr.nodelay(False)
     stdscr.clear()
-    stdscr.addstr(10, 75, f"THE TIMER ENDED", curses.color_pair(4)|curses.A_BOLD)
-    stdscr.addstr(15, 70, f"RESULTS WILL APPEAR IN 5 SECONDS", curses.color_pair(4)|curses.A_BOLD)
+    stdscr.addstr(10, 76, f"TEST COMPLETED", curses.color_pair(4)|curses.A_BOLD)
+    for i in range(5,0,-1):
+        stdscr.addstr(15, 67, f"RESULTS WILL APPEAR IN {i} SECONDS", curses.color_pair(4)|curses.A_BOLD)
+        stdscr.refresh()
+        time.sleep(1)
+
     stdscr.refresh()
-    time.sleep(5)
     curses.flushinp()
      
 
