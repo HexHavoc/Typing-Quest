@@ -7,6 +7,18 @@ import os
 from timer import timer_mode
 
 
+def end_screen_complete(stdscr):
+    stdscr.nodelay(False)
+    stdscr.clear()
+    stdscr.addstr(10, 76, f"TEST COMPLETED", curses.color_pair(4)|curses.A_BOLD)
+    for i in range(5,0,-1):
+        stdscr.addstr(15, 67, f"RESULTS WILL APPEAR IN {i} SECONDS", curses.color_pair(4)|curses.A_BOLD)
+        stdscr.refresh()
+        time.sleep(1)
+
+    stdscr.refresh()
+    curses.flushinp()
+
 class TypingQuest:
     def welcome_message(self, stdscr):
         stdscr.clear()
@@ -216,7 +228,8 @@ class TypingQuest:
                     pass    
 
                 if len(self.entered_text) == len(self.paragraph):
-                    stdscr.nodelay(False)
+                    end_screen_complete(stdscr)
+                    stdscr.attrset(0)
                     final_time = time.time() - start_timer
                     self.final_wpm = round((total_keystrokes / (final_time / 60)) / 5)
                     self.final_accuracy = self.calculate_accuracy(self.entered_text, self.paragraph)
